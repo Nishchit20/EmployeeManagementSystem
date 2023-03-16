@@ -10,6 +10,10 @@ namespace EmployeeManagementSystem.Controllers
     [Authorize(Roles = "admin")]
     public class AdminController : Controller
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Display()
         {
             return View();
