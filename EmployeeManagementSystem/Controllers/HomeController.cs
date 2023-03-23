@@ -1,24 +1,31 @@
-﻿using EmployeeManagementSystem.DataAccess.Repositories.Abstract;
-using EmployeeManagementSystem.Models;
+﻿using EmployeeManagementSystem.Models;
 using EmployeeManagementSystem.Models.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace EmployeeManagementSystem.Controllers
 {
+    /// <summary>
+    /// This Controller will have The home page and the User profile information
+    /// </summary>
     public class HomeController : Controller
     {
+
         private readonly ILogger<HomeController> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _db;
 
+        /// <summary>
+        /// Contructor used to handle the operation
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="userManager"></param>
+        /// <param name="db"></param>
         public HomeController(ILogger<HomeController> logger, UserManager<ApplicationUser> userManager, ApplicationDbContext db)
         {
             _logger = logger;
@@ -26,11 +33,20 @@ namespace EmployeeManagementSystem.Controllers
             _db = db;
         }
 
+        /// <summary>
+        /// Home PAGE
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Index()
         {
             return View();
         }
 
+
+        /// <summary>
+        /// Profile view
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Privacy()
         {
             var userId = _userManager.GetUserId(HttpContext.User);
@@ -46,7 +62,11 @@ namespace EmployeeManagementSystem.Controllers
             
         }
 
-        // GET: EmployeeList/Edit/5
+        /// <summary>
+        /// Profile update view GET method
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult Edit(string id)
         {
             if (id == "" || id == null)
@@ -63,18 +83,32 @@ namespace EmployeeManagementSystem.Controllers
             return View(employeeFromDbFirst);
         }
 
+        /// <summary>
+        /// Profile update view POST method
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(ApplicationUser obj, string id)
         {
             var employeeFromDbFirst = _db.ApplicationUsers.Find(id);
+            var objEmail = obj.Email;
+            if (objEmail != employeeFromDbFirst.Email)
+            {
+                var isEmailAlreadyExists = _db.ApplicationUsers.Any(objEmployee => objEmployee.Email == obj.Email);
+                if (isEmailAlreadyExists)
+                {
+                    ModelState.AddModelError("Email", "User with this email already exists");
+                    return View(obj);
+                }
+            }
             employeeFromDbFirst.UserName = obj.UserName;
             employeeFromDbFirst.Email = obj.Email;
             employeeFromDbFirst.Name = obj.Name;
             employeeFromDbFirst.PhoneNumber = obj.PhoneNumber;
             employeeFromDbFirst.Salary = obj.Salary;
-
-
             if (ModelState.IsValid)
             {
                 _db.ApplicationUsers.Update(employeeFromDbFirst);
@@ -100,11 +134,7 @@ namespace EmployeeManagementSystem.Controllers
                                 foreach (var property in proposedValues.Properties)
                                 {
                                     var proposedValue = proposedValues[property];
-                                    var databaseValue = databaseValues[property];
-
-                                    //TODO: decide which value should be written to database                                    
-                                    //if(property.Name == "Salary")                                    
-                                    //  proposedValues[property] =proposedValue;                                
+                                    var databaseValue = databaseValues[property];                               
                                 }
                                 //Refresh original values to bypass next concurrency check                                
                                 entry.OriginalValues.SetValues(databaseValues);
@@ -121,7 +151,10 @@ namespace EmployeeManagementSystem.Controllers
             return RedirectToAction("Index");
         }
 
-
+        /// <summary>
+        /// Error View model
+        /// </summary>
+        /// <returns></returns>
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

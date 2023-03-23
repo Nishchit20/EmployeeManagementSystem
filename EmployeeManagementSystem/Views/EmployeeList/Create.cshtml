@@ -6,28 +6,22 @@
             <h2 class="text-primary">Add Employee</h2>
             <hr />
         </div>
-        <!--<div asp-validation-summary="All"></div>-->
-
+        @*<div asp-validation-summary="All"></div>*@
         <div class="mb-3">
-            <label asp-for="UserName"></label>
-            <input asp-for="UserName" class="form-control" />
+            <label >Employee-ID</label>
+            <input asp-for="UserName" class="form-control"  required/>
             <span asp-validation-for="UserName" class="text-danger"></span>
         </div>
         <div class="mb-3">
             <label asp-for="Email"></label>
-            <input asp-for="Email" class="form-control" />
+            <input asp-for="Email" type="Email" class="form-control" required/>
             <span asp-validation-for="Email" class="text-danger"></span>
         </div>
         <div class="mb-3">
                 <label asp-for="Name"></label>
-                <input asp-for="Name" class="form-control" />
+                <input asp-for="Name" class="form-control" RE />
                 <span asp-validation-for="Name" class="text-danger "></span>
             </div>
-        @*<div class="mb-3">
-            <label asp-for="PasswordHash"></label>
-            <input asp-for="PasswordHash" disabled class="form-control" />
-
-        </div>*@
         <div class="mb-3">
                 <label asp-for="PhoneNumber"></label>
                 <input asp-for="PhoneNumber" class="form-control" />

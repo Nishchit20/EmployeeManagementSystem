@@ -1,10 +1,8 @@
 ﻿using EmployeeManagementSystem.Models;
-using EmployeeManagementSystem.Models.Domain;
 using EmployeeManagementSystem.Repositories.Abstract;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -29,7 +27,7 @@ namespace EmployeeManagementSystem.Repositories.Implementation
             if(user == null)
             {
                 status.StatusCode = 0;
-                status.Message = "Invalid Username";
+                status.Message = "Invalid Employee-ID";
                 return status;
             }
 
@@ -69,7 +67,6 @@ namespace EmployeeManagementSystem.Repositories.Implementation
                 status.Message = "Error on logging in";
                 return status;
             }
-
         }
 
         public async Task LogoutAsync()
@@ -80,17 +77,24 @@ namespace EmployeeManagementSystem.Repositories.Implementation
         public async Task<Status> RegistrationAsync(RegistrationModel model)
         {
             var status = new Status();
-            var userExists = await userManager.FindByNameAsync(model.Username);
-            if(userExists != null)
+            //var userExists = await userManager.FindByNameAsync(model.Username);
+
+            var EmailExists = await userManager.FindByEmailAsync(model.Email);
+            if (EmailExists != null)
             {
                 status.StatusCode = 0;
                 status.Message = "User already exists";
                 return status;
             }
+            //if (userExists != null)
+            //{
+            //    status.StatusCode = 0;
+            //    status.Message = "User already exists";
+            //    return status;
+            //}
             ApplicationUser user = new ApplicationUser
             {
                 SecurityStamp = Guid.NewGuid().ToString(),
-                //PasswordHash = Guid.NewGuid().ToString(),
                 Name = model.Name,
                 Email = model.Email,
                 UserName = model.Username,
@@ -103,6 +107,21 @@ namespace EmployeeManagementSystem.Repositories.Implementation
                 status.Message = "User creation failed";
                 return status;
             }
+
+
+            //IdentityRole role = await roleManager.FindByIdAsync(model.IdentityRoleId);
+            //if (role != null)
+            //{
+            //    IdentityResult roleResult = await userManager.AddToRoleAsync(user, role.Name);
+            //    if (roleResult.Succeeded)
+            //    {
+            //        status.StatusCode = 1;
+            //        status.Message = "User has been registered successfully";
+
+            //    }
+            //}
+            //return status;
+
 
             //Roll management
             if (!await roleManager.RoleExistsAsync(model.Role))

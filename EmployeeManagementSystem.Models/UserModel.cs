@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace EmployeeManagementSystem.Models
 {
-    public class RegistrationModel 
+    public class UserModel
     {
         [Required]
         [Display(Name = "Name")]
@@ -27,15 +24,5 @@ namespace EmployeeManagementSystem.Models
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string PasswordConfirm { get; set; }
-        public string PhoneNumber { get; set; }
-        public int Salary { get; set; }
-
-        public string? Role { get; set; }
-
-        public List<SelectListItem> IdentityRoles { get; set; }
-        [Display(Name = "Role")]
-        public string IdentityRoleId { get; set; }
-
-
     }
 }

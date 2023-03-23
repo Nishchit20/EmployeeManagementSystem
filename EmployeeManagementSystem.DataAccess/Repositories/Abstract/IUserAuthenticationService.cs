@@ -1,8 +1,4 @@
-﻿using EmployeeManagementSystem.DataAccess.Repositories.Abstract;
-using EmployeeManagementSystem.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using EmployeeManagementSystem.Models;
 using System.Threading.Tasks;
 
 namespace EmployeeManagementSystem.Repositories.Abstract

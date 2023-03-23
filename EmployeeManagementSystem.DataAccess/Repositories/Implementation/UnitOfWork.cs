@@ -1,9 +1,6 @@
 ﻿using EmployeeManagementSystem.DataAccess.Repositories.Abstract;
 using EmployeeManagementSystem.Models.Domain;
 using EmployeeManagementSystem.Repositories.Abstract;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EmployeeManagementSystem.DataAccess.Repositories.Implementation
 {
