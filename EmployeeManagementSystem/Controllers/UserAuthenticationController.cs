@@ -14,6 +14,9 @@ namespace EmployeeManagementSystem.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
 
+        enum StatusValue { Low, High}
+
+
         /// <summary>
         /// Constructor to handle User Authentciation
         /// </summary>
@@ -50,7 +53,7 @@ namespace EmployeeManagementSystem.Controllers
             }
             model.Role = "user";
             var result = await _service.RegistrationAsync(model);
-            if (result.StatusCode == 1)
+            if (result.StatusCode == (int)StatusValue.High)
             {
                 TempData["message"] = result.Message;
             }

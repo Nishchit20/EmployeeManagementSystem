@@ -20,13 +20,19 @@ namespace EmployeeManagementSystem.Repositories.Implementation
             this.userManager = userManager;
             this.roleManager = roleManager;
         }
+        enum Value
+        {
+            Low,
+            High
+        }
         public async Task<Status> LoginAsync(LoginModel model)
         {
             var status = new Status();
-            var user = await userManager.FindByNameAsync(model.Username);
+            
+        var user = await userManager.FindByNameAsync(model.Username);
             if(user == null)
             {
-                status.StatusCode = 0;
+                status.StatusCode = (int)Value.Low;
                 status.Message = "Invalid Employee-ID";
                 return status;
             }
@@ -34,7 +40,7 @@ namespace EmployeeManagementSystem.Repositories.Implementation
             //we will match password
             if(!await userManager.CheckPasswordAsync(user, model.Password))
             {
-                status.StatusCode = 0;
+                status.StatusCode = (int)Value.Low;
                 status.Message = "Invalid Password";
                 return status;
             }
@@ -51,19 +57,19 @@ namespace EmployeeManagementSystem.Repositories.Implementation
                 {
                     authClaims.Add(new Claim(ClaimTypes.Role, userRole));
                 }
-                status.StatusCode = 1;
+                status.StatusCode = (int)Value.High;
                 status.Message = "Logged in Successfully";
                 return status;
             }
             else if(signInResult.IsLockedOut)
             {
-                status.StatusCode = 0;
+                status.StatusCode = (int)Value.Low;
                 status.Message = "User locked out";
                 return status;
             }
             else
             {
-                status.StatusCode = 0;
+                status.StatusCode = (int)Value.Low;
                 status.Message = "Error on logging in";
                 return status;
             }
@@ -77,21 +83,14 @@ namespace EmployeeManagementSystem.Repositories.Implementation
         public async Task<Status> RegistrationAsync(RegistrationModel model)
         {
             var status = new Status();
-            //var userExists = await userManager.FindByNameAsync(model.Username);
 
             var EmailExists = await userManager.FindByEmailAsync(model.Email);
             if (EmailExists != null)
             {
-                status.StatusCode = 0;
+                status.StatusCode = (int)Value.Low;
                 status.Message = "User already exists";
                 return status;
             }
-            //if (userExists != null)
-            //{
-            //    status.StatusCode = 0;
-            //    status.Message = "User already exists";
-            //    return status;
-            //}
             ApplicationUser user = new ApplicationUser
             {
                 SecurityStamp = Guid.NewGuid().ToString(),
@@ -103,25 +102,10 @@ namespace EmployeeManagementSystem.Repositories.Implementation
             var result = await userManager.CreateAsync(user, model.Password);
             if(!result.Succeeded)
             {
-                status.StatusCode = 0;
+                status.StatusCode = (int)Value.Low;
                 status.Message = "User creation failed";
                 return status;
             }
-
-
-            //IdentityRole role = await roleManager.FindByIdAsync(model.IdentityRoleId);
-            //if (role != null)
-            //{
-            //    IdentityResult roleResult = await userManager.AddToRoleAsync(user, role.Name);
-            //    if (roleResult.Succeeded)
-            //    {
-            //        status.StatusCode = 1;
-            //        status.Message = "User has been registered successfully";
-
-            //    }
-            //}
-            //return status;
-
 
             //Roll management
             if (!await roleManager.RoleExistsAsync(model.Role))
@@ -134,7 +118,7 @@ namespace EmployeeManagementSystem.Repositories.Implementation
                 await userManager.AddToRoleAsync(user, model.Role);
             }
 
-            status.StatusCode = 1;
+            status.StatusCode = (int)Value.High;
             status.Message = "User has registered successfully";
             return status;
         }

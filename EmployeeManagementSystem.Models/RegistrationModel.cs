@@ -5,6 +5,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EmployeeManagementSystem.Models
 {
+    /// <summary>
+    /// This Entity table is Used for the Registration
+    /// VIEW MODEL
+    /// </summary>
     public class RegistrationModel 
     {
         [Required]

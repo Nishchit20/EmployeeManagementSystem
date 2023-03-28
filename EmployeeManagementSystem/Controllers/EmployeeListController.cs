@@ -1,10 +1,12 @@
-﻿using EmployeeManagementSystem.Models;
-using EmployeeManagementSystem.Models.Domain;
+﻿using EmployeeManagementSystem.DataAccess.Repositories.Repository.IRepository;
+using EmployeeManagementSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace EmployeeManagementSystem.Controllers
 {
@@ -14,15 +16,15 @@ namespace EmployeeManagementSystem.Controllers
     [Authorize]
     public class EmployeeListController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private readonly IUnitOfWork _unitOfWork;
 
         /// <summary>
         /// This constructor is used to access the db details
         /// </summary>
         /// <param name="db"></param>
-        public EmployeeListController(ApplicationDbContext db)
+        public EmployeeListController(IUnitOfWork unitOfWork)
         {
-            _db = db;  
+            _unitOfWork = unitOfWork;  
         }
 
         /// <summary>
@@ -33,9 +35,9 @@ namespace EmployeeManagementSystem.Controllers
         /// <param name="searchString"></param>
         /// <returns></returns>
         // GET: EmployeeList
-        public ActionResult Index(string searchString)
+        public async Task<ActionResult> Index(string searchString)
         {
-            var applicationUsers = from objEmployee in _db.ApplicationUsers select objEmployee;
+            IEnumerable<ApplicationUser> applicationUsers = from objEmployee in _unitOfWork.ApplicationUser.GetAll() select objEmployee;
             if (!String.IsNullOrEmpty(searchString))
             {
                 applicationUsers = applicationUsers.Where(objEmployeeList => objEmployeeList.UserName.Contains(searchString) || objEmployeeList.Name.Contains(searchString) || objEmployeeList.Email.Contains(searchString) || objEmployeeList.Salary.ToString().Contains(searchString));
@@ -61,10 +63,10 @@ namespace EmployeeManagementSystem.Controllers
         // POST: EmployeeList/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(ApplicationUser obj)
+        public async Task<ActionResult> Create(ApplicationUser obj)
         {
-           
-            var isEmailAlreadyExists = _db.ApplicationUsers.Any(objEmployee => objEmployee.Email == obj.Email);
+            //throw new Exception("Error in create view");
+            var isEmailAlreadyExists = _unitOfWork.ApplicationUser.GetAny(obj);
             if (isEmailAlreadyExists)
             {
                 ModelState.AddModelError("Email", "User with this email already exists");
@@ -73,9 +75,8 @@ namespace EmployeeManagementSystem.Controllers
 
             if (ModelState.IsValid)
             {
-                _db.ApplicationUsers.Add(obj);
-                _db.SaveChanges();
-                //TempData["success"] = "Employee added successfully";
+                await _unitOfWork.ApplicationUser.AddAsync(obj);
+                await _unitOfWork.SaveAsync();
                 return RedirectToAction("Index");
             }
             return View(obj);
@@ -87,14 +88,14 @@ namespace EmployeeManagementSystem.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         // GET: EmployeeList/Edit/5
-        public IActionResult Edit(string id)
+        public ActionResult Edit(string id)
         {
-            if (id == "" || id == null)
+            if (string.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
 
-            var employeeFromDbFirst = _db.ApplicationUsers.Find(id);
+            var employeeFromDbFirst = _unitOfWork.ApplicationUser.GetFirstOrDefault(u=>u.Id == id);
 
             if (employeeFromDbFirst == null)
             {
@@ -111,13 +112,13 @@ namespace EmployeeManagementSystem.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(ApplicationUser obj, string id)        
+        public async Task<ActionResult> Edit(ApplicationUser obj, string id)        
         {
-            var employeeFromDbFirst = _db.ApplicationUsers.Find(id);
+            var employeeFromDbFirst = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Id == id);
             var objEmail = obj.Email;
-            if(objEmail!=employeeFromDbFirst.Email)
+            if (objEmail != employeeFromDbFirst.Email)
             {
-                var isEmailAlreadyExists = _db.ApplicationUsers.Any(objEmployee => objEmployee.Email == obj.Email);
+                var isEmailAlreadyExists = _unitOfWork.ApplicationUser.GetAny(obj);
                 if (isEmailAlreadyExists)
                 {
                     ModelState.AddModelError("Email", "User with this email already exists");
@@ -132,14 +133,14 @@ namespace EmployeeManagementSystem.Controllers
             employeeFromDbFirst.Salary = obj.Salary;
 
             if (ModelState.IsValid)            
-            {                
-                _db.ApplicationUsers.Update(employeeFromDbFirst);                
+            {
+                _unitOfWork.ApplicationUser.Update(employeeFromDbFirst);                
                 var saved = false;                
                 while (!saved)                
                 {                    
                     try                    
-                    {                        
-                        _db.SaveChanges();                                              
+                    {
+                        await _unitOfWork.SaveAsync();                                              
                         saved = true;                    
                     }                    
                     catch (DbUpdateConcurrencyException ex)                    
@@ -177,15 +178,15 @@ namespace EmployeeManagementSystem.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(string id)
+        public async Task<ActionResult> Delete(string id)
         {
-            var obj = _db.ApplicationUsers.Find(id);
+            var obj = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Id == id);
             if (obj == null)
             {
                 return NotFound();
             }
-            _db.ApplicationUsers.Remove(obj);
-            _db.SaveChanges();
+            _unitOfWork.ApplicationUser.Remove(obj);
+            await _unitOfWork.SaveAsync();
             return RedirectToAction("Index");
         }
     }

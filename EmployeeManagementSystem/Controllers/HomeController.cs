@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace EmployeeManagementSystem.Controllers
 {
@@ -37,7 +37,7 @@ namespace EmployeeManagementSystem.Controllers
         /// Home PAGE
         /// </summary>
         /// <returns></returns>
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             return View();
         }
@@ -47,7 +47,7 @@ namespace EmployeeManagementSystem.Controllers
         /// Profile view
         /// </summary>
         /// <returns></returns>
-        public IActionResult Privacy()
+        public async Task<IActionResult> Privacy()
         {
             var userId = _userManager.GetUserId(HttpContext.User);
             if(userId==null)
@@ -67,14 +67,14 @@ namespace EmployeeManagementSystem.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ActionResult Edit(string id)
+        public async Task<IActionResult> Edit(string id)
         {
-            if (id == "" || id == null)
+            if (string.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
 
-            var employeeFromDbFirst = _db.ApplicationUsers.Find(id);
+            var employeeFromDbFirst = await _db.ApplicationUsers.FindAsync(id);
 
             if (employeeFromDbFirst == null)
             {
@@ -91,13 +91,13 @@ namespace EmployeeManagementSystem.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(ApplicationUser obj, string id)
+        public async Task<IActionResult> Edit(ApplicationUser obj, string id)
         {
-            var employeeFromDbFirst = _db.ApplicationUsers.Find(id);
+            var employeeFromDbFirst = await _db.ApplicationUsers.FindAsync(id);
             var objEmail = obj.Email;
             if (objEmail != employeeFromDbFirst.Email)
             {
-                var isEmailAlreadyExists = _db.ApplicationUsers.Any(objEmployee => objEmployee.Email == obj.Email);
+                var isEmailAlreadyExists = await _db.ApplicationUsers.AnyAsync(objEmployee => objEmployee.Email == obj.Email);
                 if (isEmailAlreadyExists)
                 {
                     ModelState.AddModelError("Email", "User with this email already exists");
@@ -117,14 +117,11 @@ namespace EmployeeManagementSystem.Controllers
                 {
                     try
                     {
-                        _db.SaveChanges();
-                        //TempData["success"] = "Cannot update                         
-                        //return RedirectToAction("Index");                        
+                        await _db.SaveChangesAsync();                     
                         saved = true;
                     }
                     catch (DbUpdateConcurrencyException ex)
-                    {
-                        // return RedirectToAction("Index");                        
+                    {                       
                         foreach (var entry in ex.Entries)
                         {
                             if (entry.Entity is ApplicationUser)
@@ -156,7 +153,7 @@ namespace EmployeeManagementSystem.Controllers
         /// </summary>
         /// <returns></returns>
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public async Task<IActionResult> Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }

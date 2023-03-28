@@ -2,6 +2,10 @@
 
 namespace EmployeeManagementSystem.Models
 {
+    /// <summary>
+    /// This Entity table is Used for Login 
+    /// VIEW MODEL
+    /// </summary>
     public class LoginModel
     {
         [Required]

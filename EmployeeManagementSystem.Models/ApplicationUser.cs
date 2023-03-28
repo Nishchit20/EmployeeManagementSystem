@@ -2,6 +2,9 @@
 
 namespace EmployeeManagementSystem.Models
 {
+    /// <summary>
+    /// This table will have the additionala properties which we need to use in Identity table
+    /// </summary>
     public class ApplicationUser : IdentityUser 
     {
         

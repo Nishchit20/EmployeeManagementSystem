@@ -1,13 +1,18 @@
-﻿using EmployeeManagementSystem.DataAccess.Repositories.Abstract;
+﻿using EmployeeManagementSystem.DataAccess.Repositories.Repository.IRepository;
 using EmployeeManagementSystem.Models.Domain;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
-namespace EmployeeManagementSystem.DataAccess.Repositories.Implementation
+namespace EmployeeManagementSystem.DataAccess.Repositories.Repository
 {
+    /// <summary>
+    /// This is Repository class.Here the actions required to fetch the data from database are performed.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class Repository<T> : IRepository<T> where T : class
     {
         private readonly ApplicationDbContext _db;
@@ -17,9 +22,10 @@ namespace EmployeeManagementSystem.DataAccess.Repositories.Implementation
             _db = db;
             this.dbSet = _db.Set<T>();
         }
-        public void Add(T entity)
+        public async Task<T> AddAsync(T entity)
         {
-            dbSet.Add(entity);             //dbSet = _db.Employees
+            await dbSet.AddAsync(entity);
+            return entity;
         }
 
         public IEnumerable<T> GetAll()
@@ -40,9 +46,5 @@ namespace EmployeeManagementSystem.DataAccess.Repositories.Implementation
             dbSet.Remove(entity);
         }
 
-        public void RemoveRange(IEnumerable<T> entity)
-        {
-            dbSet.RemoveRange(entity);
-        }
     }
 }
