@@ -11,6 +11,10 @@ namespace EmployeeManagementSystem.DataAccess.Repositories.Repository
     {
         private readonly ApplicationDbContext _db;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="db"></param>
         public UnitOfWork(ApplicationDbContext db) 
         {
             _db = db;
@@ -19,6 +23,10 @@ namespace EmployeeManagementSystem.DataAccess.Repositories.Repository
 
         public IApplicationUserRepository ApplicationUser { get; private set; }
 
+        /// <summary>
+        /// This method is used to save all the details after all the changes done 
+        /// </summary>
+        /// <returns></returns>
         public async Task<int> SaveAsync()
         {
             return await _db.SaveChangesAsync();

@@ -14,17 +14,30 @@ namespace EmployeeManagementSystem.DataAccess.Repositories.Repository
         private readonly ApplicationDbContext _db;
         internal DbSet<ApplicationUser> dbSet;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="db"></param>
         public ApplicationUserRepository(ApplicationDbContext db) : base(db)
         {
             _db = db;
             this.dbSet = _db.Set<ApplicationUser>();
         }
 
+        /// <summary>
+        /// This method is used to update the employee details
+        /// </summary>
+        /// <param name="obj"></param>
         public void Update(ApplicationUser obj)
         {
             _db.ApplicationUsers.Update(obj);
         }
 
+        /// <summary>
+        /// This method is used to check whether the given data present in the database
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public dynamic GetAny(ApplicationUser obj)
         {
             return _db.ApplicationUsers.Any(objEmployee => objEmployee.Email == obj.Email);

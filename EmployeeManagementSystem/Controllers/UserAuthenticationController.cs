@@ -86,7 +86,7 @@ namespace EmployeeManagementSystem.Controllers
                 return View(model);
             }
             var result = await _service.LoginAsync(model);
-            if (result.StatusCode == 1)
+            if (result.StatusCode == (int) StatusValue.High)
             {
                 return RedirectToAction("Index", "Home"); 
             }

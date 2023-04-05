@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeManagementSystem.Controllers
 {
+    /// <summary>
+    /// This is Error controller where the error handling is performed 
+    /// </summary>
     public class ErrorController : Controller
     {
         [Route("Error/{statusCode}")]
@@ -17,8 +20,6 @@ namespace EmployeeManagementSystem.Controllers
                     ViewBag.Path = statusCodeResult.OriginalPath;
                     ViewBag.QS = statusCodeResult.OriginalQueryString;
                     break;
-
-
 
             }
             return View("NotFound");

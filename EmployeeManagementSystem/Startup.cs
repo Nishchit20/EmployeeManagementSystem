@@ -17,6 +17,9 @@ using System.Net;
 
 namespace EmployeeManagementSystem
 {
+    /// <summary>
+    /// This is the startup file
+    /// </summary>
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -74,6 +77,7 @@ namespace EmployeeManagementSystem
 
             app.UseRouting();
 
+            //This is used for the User Authentication and Authorization
             app.UseAuthentication();
             app.UseAuthorization();
 

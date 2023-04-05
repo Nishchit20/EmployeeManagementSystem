@@ -189,5 +189,21 @@ namespace EmployeeManagementSystem.Controllers
             await _unitOfWork.SaveAsync();
             return RedirectToAction("Index");
         }
+
+        //public IActionResult Lagger(string UserName, string Password)
+        //{
+        //    if (UserName.ToLower() == "admin" && Password == "admin@123")
+        //    {
+        //        return View("AdminDashboard");
+        //    }
+        //    else if (UserName.ToLower() == "Nishchit" && Password == "shetty")
+        //    {
+        //        return View("NishchitDashboard");
+        //    }
+        //    else
+        //    {
+        //        return Content("No Authentication");
+        //    }
+        //}
     }
 }
