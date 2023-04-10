@@ -16,5 +16,6 @@ namespace EmployeeManagementSystem.DataAccess.Repositories.Repository.IRepositor
         IEnumerable<T> GetAll();
         Task<T> AddAsync(T entity);
         void Remove(T entity);
+
     }
 }

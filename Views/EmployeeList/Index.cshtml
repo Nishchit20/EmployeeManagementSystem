@@ -1,0 +1,86 @@
+﻿@model IEnumerable<EmployeeManagementSystem.Models.ApplicationUser>
+@{
+    ViewData["Title"] = "Employee List";
+}
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">Employee List</h2>
+        </div>
+        <div class="col-6 text-end">
+            <a asp-controller="EmployeeList" asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-person-plus"></i>&nbsp; Add New Employee
+            </a>
+        </div>
+    </div>
+
+    <br />
+
+    <!--Search action-->
+    <form asp-action="Index" method="get">
+        <div class="form-actions no-color">
+            <p>
+                <input type="text" name="SearchString"  />
+                <input type="submit" value="Search" class="btn btn-default" style="border:2px solid black;" />
+
+            </p>
+        </div>
+    </form>
+
+    <!--Employee table-->
+    <table class="table " style="width:100%">
+        <thead>
+            <tr>
+
+                <th>
+                    @Html.Label("Employee-ID")
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Email)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PhoneNumber)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Salary)
+                </th>
+                <th></th>
+            </tr>
+        </thead> 
+        <tbody>
+            @foreach (var item in Model)
+            {
+                using (Html.BeginForm("Delete", "EmployeeList", new { id = @item.Id }))
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UserName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Email)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>             
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PhoneNumber)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Salary)
+                        </td>
+                        <td>
+                            <div class="w-75 btn-group" role="group">
+                                <a asp-controller="EmployeeList" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary mx-2"><i class="bi bi-pencil-square"></i> Edit</a>
+                                <input type="submit" value="Delete" class="btn btn-danger mx-2" onclick="return confirm('Are you sure, You want to delete the selected details?')"/>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            </tbody>
+    </table>
+</div>

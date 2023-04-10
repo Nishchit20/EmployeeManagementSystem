@@ -1,0 +1,95 @@
+﻿@model EmployeeManagementSystem.Models.LoginModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Login</title>
+    <!--Embedded styling applied for the login page-->
+    <style>
+        form {
+            border: 3px solid #f1f1f1;
+            width: 60%;
+            margin: auto;
+            margin-top: 10%;
+        }
+
+        input[type=text], input[type=password] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #aa048b;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .container {
+            padding: 16px;
+        }
+
+        .msg {
+            padding: 0px;
+        }
+
+        .err {
+            color: red;
+        }
+
+        .success {
+            padding: 0px;
+            color: green;
+        }
+
+        .error {
+            padding: 0px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <form asp-action="Login" method="post">
+
+        <div class="container">
+            <label asp-for="Username"><b>Employee-ID</b></label>
+            <input type="text" asp-for="Username" placeholder="Enter Username">
+            <div class="msg">
+                <span class="text-danger" asp-validation-for="Username "></span>
+            </div>
+
+            <label asp-for="Password"><b>Password</b></label>
+            <input type="password" asp-for="Password" placeholder="Enter Password">
+            <div class="msg">
+                <span class="text-danger" asp-validation-for="Password"></span>
+            </div>
+
+
+            @if (TempData["message"] != null)
+            {
+                <div class="form-group"><span class="success"> @TempData["message"]</span></div>
+            }
+            @if (TempData["error"] != null)
+            {
+                <div class="form-group"><span class="error"> @TempData["error"]</span></div>
+            }
+
+            <button type="submit">Login</button>
+            <a class="text-alert" asp-controller="UserAuthentication" asp-action="Registration">Not a user? Signup</a>
+        </div>
+    </form>
+
+</body>
+</html>

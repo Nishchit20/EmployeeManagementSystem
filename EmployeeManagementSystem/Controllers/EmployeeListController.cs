@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace EmployeeManagementSystem.Controllers
@@ -17,6 +18,7 @@ namespace EmployeeManagementSystem.Controllers
     public class EmployeeListController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        
 
         /// <summary>
         /// This constructor is used to access the db details
@@ -24,7 +26,7 @@ namespace EmployeeManagementSystem.Controllers
         /// <param name="db"></param>
         public EmployeeListController(IUnitOfWork unitOfWork)
         {
-            _unitOfWork = unitOfWork;  
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
@@ -75,9 +77,16 @@ namespace EmployeeManagementSystem.Controllers
 
             if (ModelState.IsValid)
             {
-                await _unitOfWork.ApplicationUser.AddAsync(obj);
-                await _unitOfWork.SaveAsync();
-                return RedirectToAction("Index");
+                try
+                {
+                    await _unitOfWork.ApplicationUser.AddAsync(obj);
+                    await _unitOfWork.SaveAsync();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode((int)HttpStatusCode.InternalServerError, $"An error occurred: {ex.Message}");
+                }
             }
             return View(obj);
         }
@@ -95,7 +104,7 @@ namespace EmployeeManagementSystem.Controllers
                 return NotFound();
             }
 
-            var employeeFromDbFirst = _unitOfWork.ApplicationUser.GetFirstOrDefault(u=>u.Id == id);
+            var employeeFromDbFirst = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Id == id);
 
             if (employeeFromDbFirst == null)
             {
@@ -112,7 +121,7 @@ namespace EmployeeManagementSystem.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(ApplicationUser obj, string id)        
+        public async Task<ActionResult> Edit(ApplicationUser obj, string id)
         {
             var employeeFromDbFirst = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Id == id);
             var objEmail = obj.Email;
@@ -132,43 +141,43 @@ namespace EmployeeManagementSystem.Controllers
             employeeFromDbFirst.PhoneNumber = obj.PhoneNumber;
             employeeFromDbFirst.Salary = obj.Salary;
 
-            if (ModelState.IsValid)            
+            if (ModelState.IsValid)
             {
-                _unitOfWork.ApplicationUser.Update(employeeFromDbFirst);                
-                var saved = false;                
-                while (!saved)                
-                {                    
-                    try                    
+                _unitOfWork.ApplicationUser.Update(employeeFromDbFirst);
+                var saved = false;
+                while (!saved)
+                {
+                    try
                     {
-                        await _unitOfWork.SaveAsync();                                              
-                        saved = true;                    
-                    }                    
-                    catch (DbUpdateConcurrencyException ex)                    
-                    {                      
-                        foreach (var entry in ex.Entries)                        
-                        {                            
-                            if (entry.Entity is ApplicationUser)                            
-                            {                                
-                                var proposedValues = entry.CurrentValues;                                
-                                var databaseValues = entry.GetDatabaseValues();                                
-                                foreach (var property in proposedValues.Properties)                                
-                                {                                    
-                                    var proposedValue = proposedValues[property];                                    
-                                    var databaseValue = databaseValues[property];                                          
-                                }                                
-                                //Refresh original values to bypass next concurrency check                                
-                                entry.OriginalValues.SetValues(databaseValues);                            
-                            }                            
-                            else                            
-                            {                                
-                                throw new NotSupportedException(                                    
-                                    "Don't know how to handle concurrency conflicts for "+ entry.Metadata.Name);                            
-                            }                        
-                        }                    
-                    }                
-                }            
-            }            
-            return RedirectToAction("Index");              
+                        await _unitOfWork.SaveAsync();
+                        saved = true;
+                    }
+                    catch (DbUpdateConcurrencyException ex)
+                    {
+                        foreach (var entry in ex.Entries)
+                        {
+                            if (entry.Entity is ApplicationUser)
+                            {
+                                var proposedValues = entry.CurrentValues;
+                                var databaseValues = entry.GetDatabaseValues();
+                                foreach (var property in proposedValues.Properties)
+                                {
+                                    var proposedValue = proposedValues[property];
+                                    var databaseValue = databaseValues[property];
+                                }
+                                //Refresh original values to bypass next concurrency check                                
+                                entry.OriginalValues.SetValues(databaseValues);
+                            }
+                            else
+                            {
+                                throw new NotSupportedException(
+                                    "Don't know how to handle concurrency conflicts for " + entry.Metadata.Name);
+                            }
+                        }
+                    }
+                }
+            }
+            return RedirectToAction("Index");
         }
 
         /// <summary>
@@ -185,25 +194,20 @@ namespace EmployeeManagementSystem.Controllers
             {
                 return NotFound();
             }
-            _unitOfWork.ApplicationUser.Remove(obj);
-            await _unitOfWork.SaveAsync();
-            return RedirectToAction("Index");
+            try
+            {
+                // Do the CRUD operation here
+                _unitOfWork.ApplicationUser.Remove(obj);
+                await _unitOfWork.SaveAsync();
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                // Log the exception here
+                return StatusCode((int)HttpStatusCode.InternalServerError, $"An error occurred: {ex.Message}");
+            }
         }
 
-        //public IActionResult Lagger(string UserName, string Password)
-        //{
-        //    if (UserName.ToLower() == "admin" && Password == "admin@123")
-        //    {
-        //        return View("AdminDashboard");
-        //    }
-        //    else if (UserName.ToLower() == "Nishchit" && Password == "shetty")
-        //    {
-        //        return View("NishchitDashboard");
-        //    }
-        //    else
-        //    {
-        //        return Content("No Authentication");
-        //    }
-        //}
+
     }
 }

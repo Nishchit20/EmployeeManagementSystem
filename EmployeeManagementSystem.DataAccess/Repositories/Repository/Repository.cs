@@ -69,5 +69,6 @@ namespace EmployeeManagementSystem.DataAccess.Repositories.Repository
             dbSet.Remove(entity);
         }
 
+
     }
 }

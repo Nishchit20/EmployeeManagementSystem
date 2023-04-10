@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace EmployeeManagementSystem.Controllers
@@ -56,8 +57,15 @@ namespace EmployeeManagementSystem.Controllers
             }
             else
             {
-                ApplicationUser user = _userManager.FindByIdAsync(userId).Result;
-                return View(user);
+                try
+                {
+                    ApplicationUser user = _userManager.FindByIdAsync(userId).Result;
+                    return View(user);
+                }
+                catch(Exception ex)
+                {
+                    return StatusCode((int)HttpStatusCode.InternalServerError, $"An error occurred: {ex.Message}");
+                }
             }
             
         }

@@ -7,7 +7,7 @@ namespace EmployeeManagementSystem.DataAccess.Repositories.Repository.IRepositor
     /// </summary>
     public interface IUnitOfWork
     {
-        IApplicationUserRepository ApplicationUser { get; }
+        IApplicationUserRepository ApplicationUser { get;  }
         Task<int> SaveAsync();
     }
 }

@@ -1,5 +1,6 @@
 using EmployeeManagementSystem.DataAccess.Repositories.Repository;
 using EmployeeManagementSystem.DataAccess.Repositories.Repository.IRepository;
+using EmployeeManagementSystem.DataAccess.Services;
 using EmployeeManagementSystem.Models;
 using EmployeeManagementSystem.Models.Domain;
 using EmployeeManagementSystem.Repositories.Abstract;
@@ -52,6 +53,7 @@ namespace EmployeeManagementSystem
 
             services.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IEmployeeService, EmployeeService>();
         }
 
         /// <summary>
@@ -65,9 +67,11 @@ namespace EmployeeManagementSystem
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                
             }
             else
             {
+                app.UseMiddleware<ExceptionHandling>();
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
