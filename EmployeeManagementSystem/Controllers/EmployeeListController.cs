@@ -207,7 +207,5 @@ namespace EmployeeManagementSystem.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, $"An error occurred: {ex.Message}");
             }
         }
-
-
     }
 }
