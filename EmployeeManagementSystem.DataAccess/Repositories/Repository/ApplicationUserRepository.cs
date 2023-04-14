@@ -2,6 +2,7 @@
 using EmployeeManagementSystem.Models;
 using EmployeeManagementSystem.Models.Domain;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 
 namespace EmployeeManagementSystem.DataAccess.Repositories.Repository
@@ -30,7 +31,14 @@ namespace EmployeeManagementSystem.DataAccess.Repositories.Repository
         /// <param name="obj"></param>
         public void Update(ApplicationUser obj)
         {
-            _db.ApplicationUsers.Update(obj);
+            try
+            {
+                _db.ApplicationUsers.Update(obj);
+            }
+            catch 
+            {
+                throw new Exception("Unable to update the employee ");
+            }
         }
 
         /// <summary>
@@ -40,7 +48,14 @@ namespace EmployeeManagementSystem.DataAccess.Repositories.Repository
         /// <returns></returns>
         public dynamic GetAny(ApplicationUser obj)
         {
-            return _db.ApplicationUsers.Any(objEmployee => objEmployee.Email == obj.Email);
+            try
+            {
+                return _db.ApplicationUsers.Any(objEmployee => objEmployee.Email == obj.Email);
+            }
+            catch 
+            {
+                throw new Exception("Unable to find the employee ");
+            }
         }
         
     }

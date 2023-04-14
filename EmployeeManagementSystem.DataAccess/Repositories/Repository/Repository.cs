@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace EmployeeManagementSystem.DataAccess.Repositories.Repository
@@ -34,7 +35,14 @@ namespace EmployeeManagementSystem.DataAccess.Repositories.Repository
         /// <returns></returns>
         public async Task<T> AddAsync(T entity)
         {
-            await dbSet.AddAsync(entity);
+            try
+            {
+                await dbSet.AddAsync(entity);
+            }
+            catch
+            {
+                throw new Exception("Unable to add the employee " );
+            }
             return entity;
         }
 
@@ -44,8 +52,16 @@ namespace EmployeeManagementSystem.DataAccess.Repositories.Repository
         /// <returns></returns>
         public IEnumerable<T> GetAll()
         {
-            IQueryable<T> query = dbSet;
-            return query.ToList();
+            try
+            {
+                IQueryable<T> query = dbSet;
+                return query.ToList();
+            }
+            catch 
+            {
+                throw new Exception("Unable to find all the employee ");
+            }
+
         }
 
         /// <summary>
@@ -55,9 +71,18 @@ namespace EmployeeManagementSystem.DataAccess.Repositories.Repository
         /// <returns></returns>
         public T GetFirstOrDefault(Expression<Func<T, bool>> filter)
         {
-            IQueryable<T> query = dbSet;
-            query = query.Where(filter);
-            return query.FirstOrDefault();
+            try
+            {
+                IQueryable<T> query = dbSet;
+                query = query.Where(filter);
+                return query.FirstOrDefault();
+            }
+            catch 
+            {
+                throw new Exception("Unable to get the employee ");
+            }
+
+            
         }
 
         /// <summary>
@@ -66,7 +91,14 @@ namespace EmployeeManagementSystem.DataAccess.Repositories.Repository
         /// <param name="entity"></param>
         public void Remove(T entity)
         {
-            dbSet.Remove(entity);
+            try
+            {
+                dbSet.Remove(entity);
+            }
+            catch 
+            {
+                throw new Exception("Unable to delete the employee ");
+            }
         }
 
 

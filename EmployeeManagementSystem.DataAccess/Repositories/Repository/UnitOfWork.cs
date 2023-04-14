@@ -1,5 +1,6 @@
 ﻿using EmployeeManagementSystem.DataAccess.Repositories.Repository.IRepository;
 using EmployeeManagementSystem.Models.Domain;
+using System;
 using System.Threading.Tasks;
 
 namespace EmployeeManagementSystem.DataAccess.Repositories.Repository
@@ -29,7 +30,15 @@ namespace EmployeeManagementSystem.DataAccess.Repositories.Repository
         /// <returns></returns>
         public async Task<int> SaveAsync()
         {
-            return await _db.SaveChangesAsync();
+            
+            try
+            {
+                return await _db.SaveChangesAsync();
+            }
+            catch
+            {
+                throw new Exception("Unable to update the employee ");
+            }
         }
 
 

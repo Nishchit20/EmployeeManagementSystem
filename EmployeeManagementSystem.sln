@@ -9,11 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeManagementSystem.Da
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeManagementSystem.Models", "EmployeeManagementSystem.Models\EmployeeManagementSystem.Models.csproj", "{7219EF79-46D3-42F7-8C68-84393FEDD879}"
 EndProject
-<<<<<<< HEAD
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeManagementSystem.Test", "EmployeeManagementSystem.Test\EmployeeManagementSystem.Test.csproj", "{0E22EEB0-4883-4542-B4B1-D7D2CE981C35}"
-=======
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeManagementSystem.Test", "EmployeeManagementSystem.Test\EmployeeManagementSystem.Test.csproj", "{0E22EEB0-4883-4542-B4B1-D7D2CE981C35}"
->>>>>>> ba5f37f19fceb1af48f4a2c6b1782a77c9b9fbfd
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

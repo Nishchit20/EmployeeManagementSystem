@@ -40,9 +40,16 @@ namespace EmployeeManagementSystem.Controllers
         public async Task<ActionResult> Index(string searchString)
         {
             IEnumerable<ApplicationUser> applicationUsers = from objEmployee in _unitOfWork.ApplicationUser.GetAll() select objEmployee;
-            if (!String.IsNullOrEmpty(searchString))
+           try
             {
-                applicationUsers = applicationUsers.Where(objEmployeeList => objEmployeeList.UserName.Contains(searchString) || objEmployeeList.Name.Contains(searchString) || objEmployeeList.Email.Contains(searchString) || objEmployeeList.Salary.ToString().Contains(searchString));
+                if (!String.IsNullOrEmpty(searchString))
+                {
+                    applicationUsers = applicationUsers.Where(objEmployeeList => objEmployeeList.UserName.Contains(searchString) || objEmployeeList.Name.Contains(searchString) || objEmployeeList.Email.Contains(searchString) || objEmployeeList.Salary.ToString().Contains(searchString));
+                }
+            }
+            catch(Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, $"An error occurred: {ex.Message}");
             }
             return View(applicationUsers.ToList());
         }
@@ -81,6 +88,7 @@ namespace EmployeeManagementSystem.Controllers
                 {
                     await _unitOfWork.ApplicationUser.AddAsync(obj);
                     await _unitOfWork.SaveAsync();
+                    ViewBag.Message = "Successfully created";
                     return RedirectToAction("Index");
                 }
                 catch (Exception ex)
@@ -99,18 +107,24 @@ namespace EmployeeManagementSystem.Controllers
         // GET: EmployeeList/Edit/5
         public ActionResult Edit(string id)
         {
-            if (string.IsNullOrEmpty(id))
+            
+            try
             {
-                return NotFound();
+                if (string.IsNullOrEmpty(id))
+                {
+                    return NotFound();
+                }
+                var employeeFromDbFirst = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Id == id);
+                if (employeeFromDbFirst == null)
+                {
+                    return NotFound();
+                }
+                return View(employeeFromDbFirst);
             }
-
-            var employeeFromDbFirst = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Id == id);
-
-            if (employeeFromDbFirst == null)
+            catch(Exception ex)
             {
-                return NotFound();
+                return StatusCode((int)HttpStatusCode.InternalServerError, $"An error occurred: {ex.Message}");
             }
-            return View(employeeFromDbFirst);
         }
 
         /// <summary>
@@ -150,6 +164,7 @@ namespace EmployeeManagementSystem.Controllers
                     try
                     {
                         await _unitOfWork.SaveAsync();
+                        ViewBag.Message = "Successfully updated";
                         saved = true;
                     }
                     catch (DbUpdateConcurrencyException ex)
@@ -199,11 +214,13 @@ namespace EmployeeManagementSystem.Controllers
                 // Do the CRUD operation here
                 _unitOfWork.ApplicationUser.Remove(obj);
                 await _unitOfWork.SaveAsync();
+                ViewBag.Message = "Successfully deleted";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 // Log the exception here
+                ViewBag.Message = $"An error occurred: {ex.Message}";
                 return StatusCode((int)HttpStatusCode.InternalServerError, $"An error occurred: {ex.Message}");
             }
         }

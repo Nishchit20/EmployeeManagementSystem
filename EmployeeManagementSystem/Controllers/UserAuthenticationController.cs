@@ -3,6 +3,8 @@ using EmployeeManagementSystem.Repositories.Abstract;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Net;
 using System.Threading.Tasks;
 
 
@@ -13,6 +15,7 @@ namespace EmployeeManagementSystem.Controllers
         private readonly IUserAuthenticationService _service;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
+        private IUserAuthenticationService object1;
 
         enum StatusValue { Low, High}
 
@@ -29,6 +32,13 @@ namespace EmployeeManagementSystem.Controllers
             this.userManager = userManager;
             this.roleManager = roleManager;
         }
+
+        public UserAuthenticationController(IUserAuthenticationService object1)
+        {
+            _service = object1;
+        }
+
+
 
         /// <summary>
         /// Registration GET method
@@ -47,20 +57,28 @@ namespace EmployeeManagementSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> Registration(RegistrationModel model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return View(model);
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+                model.Role = "user";
+                var result = await _service.RegistrationAsync(model);
+                if (result.StatusCode == (int)StatusValue.High)
+                {
+                    TempData["message"] = result.Message;
+                }
+                else
+                {
+                    TempData["error"] = result.Message;
+                }
             }
-            model.Role = "user";
-            var result = await _service.RegistrationAsync(model);
-            if (result.StatusCode == (int)StatusValue.High)
+            catch(Exception ex)
             {
-                TempData["message"] = result.Message;
+                return StatusCode((int)HttpStatusCode.InternalServerError, $"An error occurred: {ex.Message}");
             }
-            else
-            {
-                TempData["error"] = result.Message;
-            }
+
             return RedirectToAction(nameof(Registration));
         }
 
@@ -81,19 +99,27 @@ namespace EmployeeManagementSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginModel model)
         {
-            if(!ModelState.IsValid)
+            try
             {
-                return View(model);
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+                var result = await _service.LoginAsync(model);
+                if (result.StatusCode == (int)StatusValue.High)
+                {
+                    TempData["message"] = result.Message;
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    TempData["error"] = result.Message;
+                    return RedirectToAction(nameof(Login));
+                }
             }
-            var result = await _service.LoginAsync(model);
-            if (result.StatusCode == (int) StatusValue.High)
+            catch(Exception ex)
             {
-                return RedirectToAction("Index", "Home"); 
-            }
-            else
-            {
-                TempData["error"] = result.Message;
-                return RedirectToAction(nameof(Login));
+                return StatusCode((int)HttpStatusCode.InternalServerError, $"An error occurred: {ex.Message}");
             }
         }
 
@@ -104,7 +130,14 @@ namespace EmployeeManagementSystem.Controllers
         [Authorize]
         public async Task<IActionResult> Logout()
         {
-            await _service.LogoutAsync();
+            try
+            {
+                await _service.LogoutAsync();
+            }
+            catch(Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, $"An error occurred: {ex.Message}");
+            }
             return RedirectToAction(nameof(Login));
         }
     }

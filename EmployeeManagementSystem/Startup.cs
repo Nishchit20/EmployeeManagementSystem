@@ -1,20 +1,16 @@
 using EmployeeManagementSystem.DataAccess.Repositories.Repository;
 using EmployeeManagementSystem.DataAccess.Repositories.Repository.IRepository;
-using EmployeeManagementSystem.DataAccess.Services;
 using EmployeeManagementSystem.Models;
 using EmployeeManagementSystem.Models.Domain;
 using EmployeeManagementSystem.Repositories.Abstract;
 using EmployeeManagementSystem.Repositories.Implementation;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Net;
 
 namespace EmployeeManagementSystem
 {
@@ -53,7 +49,6 @@ namespace EmployeeManagementSystem
 
             services.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<IEmployeeService, EmployeeService>();
         }
 
         /// <summary>

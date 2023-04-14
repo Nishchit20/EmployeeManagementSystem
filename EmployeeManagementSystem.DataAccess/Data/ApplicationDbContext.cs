@@ -15,8 +15,6 @@ namespace EmployeeManagementSystem.Models.Domain
         }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
-
-
         /// <summary>
         /// Data seeding entity framework core has been performed to add the admin detail
         /// </summary>
